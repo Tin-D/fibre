@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.CustomerDao">
+    <select id="pagination" resultType="com.jy.fibre.domain.Customer">
+        select * from customer
+        <where>
+            <if test="query.name != null and query.name != ''">
+                name like concat('%', #{query.name}, '%')
+            </if>
+            <if test="query.chargeUserFullName != null and query.chargeUserFullName != ''">
+                and charge_user_full_name like concat('%', #{query.chargeUserFullName}, '%')
+            </if>
+            <if test="query.chargeUserEmail != null and query.chargeUserEmail != ''">
+                and charge_user_email like concat('%', #{query.chargeUserEmail}, '%')
+            </if>
+            <if test="query.chargeUserPhone != null and query.chargeUserPhone != ''">
+                and charge_user_phone like concat('%', #{query.chargeUserPhone}, '%')
+            </if>
+        </where>
+        group by id
+            order by ${query.sortField} ${query.sortOrder}
+    </select>
+
+</mapper>

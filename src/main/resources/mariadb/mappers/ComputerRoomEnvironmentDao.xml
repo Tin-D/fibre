@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.ComputerRoomEnvironmentDao">
+    <select id="findRecordByTaskIdAndComputerRoomId" resultType="com.jy.fibre.domain.ComputerRoomEnvironment">
+        select *
+        from computer_room_environment
+        where task_id = #{taskId}
+          and computer_room_id = #{computerRoomId}
+    </select>
+</mapper>

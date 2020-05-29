@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.ComputerRoomDao">
+    <select id="paginationIds" resultType="java.lang.String">
+        select cr.id
+        from computer_room cr
+        left join customer c
+        on cr.customer_id=c.id
+        <where>
+            <if test="query.name != null and query.name != ''">
+                cr.name like concat('%', #{query.name}, '%')
+            </if>
+            <if test="query.address != null and query.address != ''">
+                and cr.address like concat('%', #{query.address}, '%')
+            </if>
+            <if test="query.contactsName != null and query.contactsName != ''">
+                and cr.contacts_name like concat('%', #{query.contactsName}, '%')
+            </if>
+            <if test="query.contactsPhone != null and query.contactsPhone != ''">
+                and cr.contacts_phone like concat('%', #{query.contactsPhone}, '%')
+            </if>
+            <if test="query.customerId != null and query.customerId != ''">
+                and cr.customer_id = #{query.customerId}
+            </if>
+            <if test="query.orderNumber != null and query.orderNumber != ''">
+                and cr.order_number like concat('%', #{query.orderNumber}, '%')
+            </if>
+            <if test="query.customerName != null and query.customerName != ''">
+                and c.name like concat('%', #{query.customerName}, '%')
+            </if>
+        </where>
+        group by cr.id
+        order by ${query.sortField} ${query.sortOrder}
+    </select>
+
+    <select id="findPaginationResultByIds" resultType="com.jy.fibre.bean.cr.ComputerRoomVO">
+        select cr.*,c.name customer_name from computer_room cr
+        left join customer c
+        on cr.customer_id=c.id
+        <where>
+            cr.id in
+            <foreach collection="ids" open="(" close=")" separator="," item="i">
+                #{i}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="theNumberOfFindByCustomerId" resultType="int">
+        select COUNT(*)
+        from computer_room
+        where customer_id = #{customerId}
+    </select>
+
+</mapper>

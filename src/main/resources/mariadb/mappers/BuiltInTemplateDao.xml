@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.BuiltInTemplateDao">
+    <select id="findByMaintenanceLevelId" resultType="com.xmgsd.lan.roadhog.bean.IdNameEntry">
+        select bit.id, bit.name
+        from built_in_template bit
+                 LEFT JOIN maintenance_details md on bit.id = md.built_in_template_id
+        where md.maintenance_level_id = #{maintenanceLevelId}
+    </select>
+    <select id="findByEquipmentTypeId" resultType="com.jy.fibre.domain.BuiltInTemplate">
+        select *
+        from built_in_template
+        where equipment_type_id = #{equipmentTypeId}
+    </select>
+</mapper>

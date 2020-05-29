@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.TaskDetailsDao">
+    <select id="findByTaskId" resultType="com.jy.fibre.domain.TaskDetails">
+        select *
+        from task_details
+        where task_id = #{taskId}
+    </select>
+
+    <select id="findTaskDetailsWithEquipmentInfoAndPatrolExcelTemplateInfo" resultMap="TaskDetailsVO">
+        SELECT td.id,
+               e.id    as equipment_id,
+               e.name  as equipment_name,
+               e.serial_number,
+               cr.id   as computer_room_id,
+               c.id    as customer_id,
+               cr.name as computer_room_name,
+               c.name  as customer_name,
+               ml.equipment_type_id,
+               bm.id   as equipment_brand_model_id,
+               ml.id   as maintenance_level_id,
+               ml.name as maintenance_level_name,
+               b.id    as built_in_template_id,
+               b.name  as built_in_template_name
+        from task_details td
+                 INNER JOIN equipment e on e.id = td.equipment_id
+                 INNER JOIN computer_room cr on e.computer_room_id = cr.id
+                 INNER JOIN customer c on cr.customer_id = c.id
+                 INNER JOIN brand_model bm on bm.id = e.brand_model_id
+                 INNER JOIN maintenance_level ml on ml.id = td.maintenance_level_id
+                 INNER JOIN maintenance_details md on ml.id = md.maintenance_level_id
+                 LEFT JOIN built_in_template b on md.built_in_template_id = b.id
+        where td.task_id = #{taskId}
+    </select>
+
+    <resultMap id="TaskDetailsVO" type="com.jy.fibre.bean.task.TaskDetailsVO" autoMapping="true">
+        <id column="id" property="id"/>
+        <collection property="patrolExcelTemplates" ofType="com.xmgsd.lan.roadhog.bean.IdNameEntry">
+            <result property="id" column="built_in_template_id"/>
+            <result property="name" column="built_in_template_name"/>
+        </collection>
+    </resultMap>
+    <select id="findByEquipmentIdAndTaskId" resultType="com.jy.fibre.domain.TaskDetails">
+        select *
+        from task_details
+        where equipment_id = #{equipmentId}
+          and task_id = #{taskId}
+    </select>
+    <select id="findComputerRoomNameByTaskId" resultType="com.xmgsd.lan.roadhog.bean.IdNameEntry">
+        select distinct cr.id, cr.name
+        from task_details td
+                 inner join equipment e on td.equipment_id = e.id
+                 inner join computer_room cr on e.computer_room_id = cr.id
+        where td.task_id = #{taskId}
+    </select>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.MaintenanceLevelDao">
+    <select id="findPatrolExcelIdAndFileNameById" resultType="com.xmgsd.lan.roadhog.bean.IdNameEntry">
+        select p.id, a.name
+        from attachment a
+                 LEFT JOIN patrol_excel p on a.recorder_id = p.id
+                 LEFT JOIN maintenance_details md on p.id = md.patrol_excel_id
+        where md.maintenance_level_id = #{id}
+    </select>
+    <select id="findByTypeId" resultType="com.xmgsd.lan.roadhog.bean.IdNameEntry">
+        select id, name
+        from maintenance_level
+        where equipment_type_id = #{equipmentTypeId}
+    </select>
+</mapper>

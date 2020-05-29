@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.AirConditionPatrolDao">
+    <select id="findRecordByTaskDetailsId" resultType="com.jy.fibre.domain.AirConditionPatrol">
+        select *
+        from air_condition_patrol
+        where task_details_id = #{taskDetailsId}
+    </select>
+</mapper>

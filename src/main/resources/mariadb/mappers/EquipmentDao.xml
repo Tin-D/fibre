@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.EquipmentDao">
+    <select id="paginationIds" resultType="java.lang.String">
+        select e.id
+        from equipment e
+        left join brand_model bm
+        on e.brand_model_id = bm.id
+        left join computer_room cr
+        on e.computer_room_id=cr.id
+        <where>
+            <if test="query.equipmentTypeId != null and query.equipmentTypeId != ''">
+                bm.equipment_type_id = #{query.equipmentTypeId}
+            </if>
+            <if test="query.brandModelId != null and query.brandModelId != ''">
+                and e.brand_model_id = #{query.brandModelId}
+            </if>
+            <if test="query.computerRoomIds != null and query.computerRoomIds.size() > 0">
+                and e.computer_room_id in
+                <foreach collection="query.computerRoomIds" item="i" open="(" close=")" separator=",">
+                    #{i}
+                </foreach>
+            </if>
+            <if test="query.state != null and query.state != ''">
+                and e.state = #{query.state}
+            </if>
+            <if test="query.name != null and query.name != ''">
+                and e.name like concat('%', #{query.name}, '%')
+            </if>
+            <choose>
+                <when test="query.dateField != null and query.dateField != ''">
+                    <if test="query.searchTime != null and query.searchTime.length != 0">
+                        and e.${query.dateField} between #{query.searchTime[0]} and #{query.searchTime[1]}
+                    </if>
+                </when>
+                <otherwise>
+                    <if test="query.searchTime != null and query.searchTime.length != 0">
+                        or e.manufacture_date between #{query.searchTime[0]} and #{query.searchTime[1]}
+                        or e.create_time between #{query.searchTime[0]} and #{query.searchTime[1]}
+                        or e.delivery_date between #{query.searchTime[0]} and #{query.searchTime[1]}
+                        or e.install_date between #{query.searchTime[0]} and #{query.searchTime[1]}
+                        or e.start_date between #{query.searchTime[0]} and #{query.searchTime[1]}
+                    </if>
+                </otherwise>
+            </choose>
+        </where>
+        group by e.id
+        order by ${query.sortField} ${query.sortOrder}
+    </select>
+
+    <select id="findPaginationResultByIds" resultType="com.jy.fibre.bean.equipment.EquipmentVO">
+        select e.*,cr.name computer_room_name,c.name customer_name
+        from equipment e
+        left join computer_room cr
+        on e.computer_room_id = cr.id
+        left join customer c
+        on cr.customer_id = c.id
+        <where>
+            e.id in
+            <foreach collection="ids" open="(" close=")" separator="," item="i">
+                #{i}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="theNumberOfFindByBrandModelId" resultType="int">
+        select COUNT(*)
+        from equipment
+        where brand_model_id = #{brandModelId}
+    </select>
+
+    <select id="theNumberOfFindByComputerRoomId" resultType="int">
+        select COUNT(*)
+        from equipment
+        where computer_room_id = #{computerRoomId}
+    </select>
+
+    <select id="findPatrolExcelIdAndFileName" resultType="com.xmgsd.lan.roadhog.bean.IdNameEntry">
+        select pe.id, a.name
+        from patrol_excel pe
+                 INNER JOIN attachment a
+                            on pe.id = a.recorder_id
+                 INNER JOIN dictionary_code dc on pe.type_id = dc.id
+        where dc.`code` = #{code}
+    </select>
+
+    <select id="findById" resultType="com.jy.fibre.bean.equipment.EquipmentVO">
+        SELECT e.id, e.name, dc.code type_code, dc.name type_name
+        from equipment e,
+             brand_model bm,
+             dictionary_code dc
+        where e.brand_model_id = bm.id
+          and dc.id = bm.type_id
+          and e.id = #{id}
+    </select>
+    <select id="findTypeById" resultType="java.lang.String">
+        select bm.type_id
+        from brand_model bm,
+             equipment e
+        where e.brand_model_id = bm.id
+          and e.id = #{id}
+    </select>
+    <select id="theNumberOfFindByComputerRoomIdAndTypeId" resultType="int">
+        SELECT COUNT(e.id)
+        from equipment e
+                 INNER JOIN brand_model bm on e.brand_model_id = bm.id
+                 INNER JOIN dictionary_code dc on bm.equipment_type_id = dc.id
+        where e.computer_room_id = #{computerRoomId}
+          and dc.id = #{equipmentTypeId}
+    </select>
+
+</mapper>

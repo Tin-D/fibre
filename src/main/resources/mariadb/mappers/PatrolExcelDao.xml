@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.PatrolExcelDao">
+    <sql id="selectPatrolExcelVO">
+        SELECT pe.*, a.`name` file_name
+        from patrol_excel pe
+                 left join attachment a on pe.id = a.recorder_id
+    </sql>
+
+    <select id="findAll" resultType="com.jy.fibre.bean.pe.PatrolExcelVO">
+        <include refid="selectPatrolExcelVO"/>
+    </select>
+
+
+    <select id="findByTypeId" resultType="com.xmgsd.lan.roadhog.bean.IdNameEntry">
+        select pe.id, a.name
+        from patrol_excel pe,
+        attachment a
+        where pe.id = a.recorder_id
+          and pe.equipment_type_id = #{typeId}
+    </select>
+
+    <select id="findByEquipmentTypeId" resultType="com.jy.fibre.bean.pe.PatrolExcelVO">
+        <include refid="selectPatrolExcelVO"/>
+        where equipment_type_id = #{equipmentTypeId}
+    </select>
+
+</mapper>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.TaskDao">
+    <select id="paginationIds" resultType="java.lang.String">
+        select t.id from task t
+        <where>
+            <if test="query.taskType != null and query.taskType != ''">
+                and t.task_type = #{query.taskType}
+            </if>
+            <if test="query.finish != null">
+                and t.finish = #{query.finish}
+            </if>
+            <if test="query.name != null and query.name != ''">
+                and t.name like concat('%', #{query.name}, '%')
+            </if>
+            <if test="query.createUserFullName != null and query.createUserFullName != ''">
+                and t.create_user_full_name like concat('%', #{query.createUserFullName}, '%')
+            </if>
+            <if test="query.finishUserFullName != null and query.finishUserFullName != ''">
+                and t.finish_user_full_name like concat('%', #{query.finishUserFullName}, '%')
+            </if>
+            <choose>
+                <when test="query.dateField != null and query.dateField != ''">
+                    <if test="query.searchTime != null and query.searchTime.length != 0">
+                        and t.${query.dateField} between #{query.searchTime[0]} and #{query.searchTime[1]}
+                    </if>
+                </when>
+                <otherwise>
+                    <if test="query.searchTime != null and query.searchTime.length != 0">
+                        or t.create_time between #{query.searchTime[0]} and #{query.searchTime[1]}
+                        or t.finish_time between #{query.searchTime[0]} and #{query.searchTime[1]}
+                    </if>
+                </otherwise>
+            </choose>
+        </where>
+        group by t.id
+        order by ${query.sortField} ${query.sortOrder}
+    </select>
+
+    <select id="findPaginationResultByIds" resultType="com.jy.fibre.bean.task.TaskVO">
+        select t.* from task t
+        <where>
+            t.id in
+            <foreach collection="ids" open="(" close=")" separator="," item="i">
+                #{i}
+            </foreach>
+        </where>
+    </select>
+    <select id="getByCode" resultType="com.jy.fibre.bean.task.TaskVO">
+        select t.*
+        from task t
+        where t.code = #{code}
+    </select>
+</mapper>

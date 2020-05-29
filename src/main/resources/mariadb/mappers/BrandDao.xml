@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.BrandDao">
+    <select id="selectAllAndTypeId" resultType="com.jy.fibre.bean.brand.BrandVO">
+        select b.*, bd.equipment_type_id
+        from brand b
+                 left join brand_details bd
+                           on b.id = bd.brand_id
+    </select>
+    <select id="findTypeIdById" resultType="java.lang.String">
+        select bd.equipment_type_id
+        from brand_details bd
+        where brand_id = #{id}
+    </select>
+
+</mapper>

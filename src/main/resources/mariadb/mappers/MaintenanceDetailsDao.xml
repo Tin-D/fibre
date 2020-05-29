@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jy.fibre.dao.MaintenanceDetailsDao">
+
+    <insert id="insert">
+        insert into maintenance_details (maintenance_level_id, patrol_excel_id, built_in_template_id)
+        values (#{md.maintenanceLevelId},
+                #{md.patrolExcelId}, #{md.builtInTemplateId})
+    </insert>
+    <delete id="deleteByPatrolExcelId">
+        delete
+        from maintenance_details
+        where patrol_excel_id = #{patrolExcelId}
+    </delete>
+    <delete id="deleteByBuiltInTemplateId">
+        delete
+        from maintenance_details
+        where built_in_template_id = #{builtInTemplateId}
+          and maintenance_level_id = #{maintenanceLevelId}
+    </delete>
+</mapper>
